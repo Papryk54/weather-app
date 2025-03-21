@@ -12,24 +12,35 @@ const WeatherBox = (props) => {
 	const handleCityChange = useCallback((city) => {
 		setErrorDisplay(false);
 		setLoaderDisplay(true);
-		fetch(
-			`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=d2e45307a0b918c23ae702a610bbce8e&units=metric`
-		).then((res) => {
-			if (res.status === 200) {
-				return res.json().then((data) => {
-					setWeatherData({
-						city: data.name,
-						temp: data.main.temp,
-						icon: data.weather[0].icon,
-						description: data.weather[0].main,
-					});
-					setLoaderDisplay(false);
+
+		const apiKey = process.env.REACT_APP_API_KEY;
+		const apiUrl = process.env.REACT_APP_API_URL;
+
+		const fetchWeatherData = async () => {
+			try {
+				const res = await fetch(
+					`${apiUrl}?q=${city}&appid=${apiKey}&units=metric`
+				);
+				if (!res.ok) {
+					throw new Error("Failed to fetch weather data");
+				}
+
+				const data = await res.json();
+				setWeatherData({
+					city: data.name,
+					temp: data.main.temp,
+					icon: data.weather[0].icon,
+					description: data.weather[0].main,
 				});
-			} else {
+				setLoaderDisplay(false);
+			} catch (error) {
 				setErrorDisplay(true);
+				setLoaderDisplay(false);
+				console.error("Error fetching weather data:", error);
 			}
-		});
-	});
+		};
+		fetchWeatherData();
+	}, []);
 	return (
 		<section>
 			<PickCity onSearch={handleCityChange} />

@@ -21,7 +21,7 @@ const PickCity = ({ onSearch }) => {
 					onChange={(e) => setCity(e.target.value)}
 				/>
 			</label>
-			<Button>Search</Button>
+			<Button type="submit">Search</Button>
 		</form>
 	);
 };
